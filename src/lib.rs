@@ -1,4 +1,4 @@
-//! OpenVR access through a shared, explicitly shut down runtime session.
+#![doc = include_str!("../README.md")]
 #![deny(unsafe_op_in_unsafe_fn)]
 #![allow(clippy::unnecessary_cast, reason = "SDK integer types vary by target")]
 

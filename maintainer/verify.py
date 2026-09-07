@@ -27,6 +27,7 @@ def run(command, capture=False):
 def compile(source, output, shared=False):
     if os.name == "nt":
         vswhere = Path(os.environ["ProgramFiles(x86)"]) / "Microsoft Visual Studio/Installer/vswhere.exe"
+        env["PATH"] = str(vswhere.parent) + os.pathsep + env["PATH"]
         vs = subprocess.check_output([vswhere, "-latest", "-products", "*", "-requires", "Microsoft.VisualStudio.Component.VC.Tools.x86.x64", "-property", "installationPath"], text=True).strip()
         vcvars = Path(vs) / "VC/Auxiliary/Build/vcvars64.bat"
         command = ["cl", "/nologo", "/std:c++17", "/EHsc", "/W4", str(source), "/Fe:" + str(output), "/Fo:" + str(output.with_suffix(".obj"))]

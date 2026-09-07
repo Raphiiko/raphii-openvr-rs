@@ -50,7 +50,13 @@ fn simulated_runtime() {
     assert!(matches!(init(), Err(Error::Runtime { code: 9999, .. })));
     assert_eq!(count(1), 0);
     set_mode(2);
-    assert!(matches!(init(), Err(Error::InterfaceUnavailable { .. })));
+    assert!(matches!(
+        init(),
+        Err(Error::InterfaceUnavailable {
+            interface: "IVRSystem_026",
+            code: 105
+        })
+    ));
     assert_eq!(count(1), 1);
     set_mode(3);
     let context = init().unwrap();

@@ -73,6 +73,12 @@ impl Context {
             library.get::<raw::exports::OpenvrGetInterface>(b"VR_GetGenericInterface\0")
         }
         .map_err(|e| Error::Load(e.to_string()))?;
+        if shutdown.is_none() {
+            return Err(Error::MissingFunction("VR_ShutdownInternal"));
+        }
+        if get.is_none() {
+            return Err(Error::MissingFunction("VR_GetGenericInterface"));
+        }
         let mut error = raw::exports::vr_EVRInitError(0);
         unsafe {
             init.ok_or(Error::MissingFunction("VR_InitInternal2"))?(
@@ -95,8 +101,7 @@ impl Context {
         };
         macro_rules! acquire {
             ($field:ident, $ty:ty, $version:ident) => {
-                session.$field =
-                    unsafe { acquire::<$ty>(get, raw::$version, stringify!($version)) };
+                session.$field = unsafe { acquire::<$ty>(get, raw::$version) };
             };
         }
         acquire!(system, raw::VR_IVRSystem_FnTable, IVRSystem_Version);
@@ -152,9 +157,12 @@ impl Context {
 
 unsafe fn acquire<T: Copy>(
     get: raw::exports::OpenvrGetInterface,
-    version: &[u8],
-    name: &'static str,
+    version: &'static [u8],
 ) -> Result<T> {
+    let name = CStr::from_bytes_with_nul(version)
+        .map_err(|_| Error::InvalidInput("invalid interface version"))?
+        .to_str()
+        .map_err(|_| Error::InvalidInput("interface version is not UTF-8"))?;
     let mut version_string = b"FnTable:".to_vec();
     version_string.extend_from_slice(version);
     let version = CStr::from_bytes_with_nul(&version_string)
