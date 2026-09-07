@@ -1,0 +1,10 @@
+[package]
+name = "raphii-openvr-rs"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+description = "Owned OpenVR function-table bindings with explicit runtime lifetimes"
+
+[dependencies]
+libloading = "0.8.9"
