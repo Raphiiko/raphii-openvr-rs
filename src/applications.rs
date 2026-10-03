@@ -34,6 +34,19 @@ impl Applications<'_> {
             Ok(unsafe { function!(table, IsApplicationInstalled)(key.as_ptr().cast_mut()) })
         })
     }
+    pub fn identify_application(&self, process_id: u32, key: &str) -> Result<()> {
+        let key = cstring(key)?;
+        self.0.with(|s| {
+            let table = s.applications.as_ref().map_err(Clone::clone)?;
+            check(
+                "applications",
+                unsafe {
+                    function!(table, IdentifyApplication)(process_id, key.as_ptr().cast_mut())
+                }
+                .0 as u32,
+            )
+        })
+    }
     pub fn get_application_auto_launch(&self, key: &str) -> Result<bool> {
         let key = cstring(key)?;
         self.0.with(|s| {
