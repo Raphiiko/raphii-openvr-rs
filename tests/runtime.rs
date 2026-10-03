@@ -327,6 +327,8 @@ fn simulated_runtime() {
         .remove_application_manifest(Path::new("manifest.json"))
         .unwrap();
     assert!(!applications.is_application_installed("test.app").unwrap());
+    applications.identify_application(42, "test.app").unwrap();
+    assert!(applications.identify_application(42, "other.app").is_err());
     overlay.destroy_overlay(handle).unwrap();
 
     let mut workers = vec![];

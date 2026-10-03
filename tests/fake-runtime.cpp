@@ -323,6 +323,10 @@ static EVRApplicationError CALL remove_manifest(char *) {
   installed = false;
   return static_cast<EVRApplicationError>(0);
 }
+static EVRApplicationError CALL identify(uint32_t pid, char *key) {
+  called();
+  return static_cast<EVRApplicationError>(pid == 42 && !std::strcmp(key, "test.app") ? 0 : 1);
+}
 static bool CALL is_installed(char *) {
   called();
   return installed;
@@ -388,6 +392,7 @@ EXPORT uint32_t VR_InitInternal2(EVRInitError *error, EVRApplicationType type,
   applications_table.AddApplicationManifest = add_manifest;
   applications_table.RemoveApplicationManifest = remove_manifest;
   applications_table.IsApplicationInstalled = is_installed;
+  applications_table.IdentifyApplication = identify;
   return 123;
 }
 EXPORT void VR_ShutdownInternal() {
