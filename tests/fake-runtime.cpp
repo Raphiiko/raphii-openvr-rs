@@ -55,6 +55,9 @@ static EDeviceActivityLevel CALL activity(uint32_t) {
   called();
   return static_cast<EDeviceActivityLevel>(mode == 7 ? 9999 : 1);
 }
+static EVRInitError CALL sdk_version(uint32_t major, uint32_t minor, uint32_t build) {
+  return static_cast<EVRInitError>(major == 2 && minor == 15 && build == 6 ? 0 : 1);
+}
 static float CALL float_property(uint32_t, ETrackedDeviceProperty,
                                  ETrackedPropertyError *error) {
   called();
@@ -206,6 +209,11 @@ static EVROverlayError CALL overlay_float(VROverlayHandle_t value, float) {
 static EVROverlayError CALL overlay_sort(VROverlayHandle_t value, uint32_t) {
   return destroy_overlay(value);
 }
+static EVROverlayError CALL overlay_from_file(VROverlayHandle_t value, char *path) {
+  if (std::strcmp(path, "overlay.png"))
+    return static_cast<EVROverlayError>(1);
+  return destroy_overlay(value);
+}
 static EVROverlayError CALL overlay_show(VROverlayHandle_t value) {
   overlay_visible = true;
   return destroy_overlay(value);
@@ -349,6 +357,7 @@ EXPORT uint32_t VR_InitInternal2(EVRInitError *error, EVRApplicationType type,
   input_table = {};
   applications_table = {};
   system_table.GetTrackedDeviceClass = device_class;
+  system_table.SetSDKVersion = sdk_version;
   system_table.GetControllerRoleForTrackedDeviceIndex = device_role;
   system_table.GetTrackedDeviceActivityLevel = activity;
   system_table.GetFloatTrackedDeviceProperty = float_property;
@@ -373,6 +382,7 @@ EXPORT uint32_t VR_InitInternal2(EVRInitError *error, EVRApplicationType type,
   overlay_table.SetOverlayAlpha = overlay_float;
   overlay_table.SetOverlayWidthInMeters = overlay_float;
   overlay_table.SetOverlaySortOrder = overlay_sort;
+  overlay_table.SetOverlayFromFile = overlay_from_file;
   overlay_table.ShowOverlay = overlay_show;
   overlay_table.HideOverlay = overlay_hide;
   overlay_table.SetOverlayTransformTrackedDeviceRelative = overlay_transform;

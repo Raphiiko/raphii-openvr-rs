@@ -1,4 +1,4 @@
-use crate::{Error, Result, raw};
+use crate::{Error, Result, function, raw};
 use libloading::Library;
 use std::{
     ffi::CStr,
@@ -113,7 +113,19 @@ impl Context {
             raw::VR_IVRApplications_FnTable,
             IVRApplications_Version
         );
-        session.system.as_ref().map_err(Clone::clone)?;
+        let system = session.system.as_ref().map_err(Clone::clone)?;
+        // SteamVR enables SDK-specific behaviour, such as overlay backsides, by the reported version
+        crate::check(
+            "initialization",
+            unsafe {
+                function!(system, SetSDKVersion)(
+                    raw::k_nSteamVRVersionMajor as u32,
+                    raw::k_nSteamVRVersionMinor as u32,
+                    raw::k_nSteamVRVersionBuild as u32,
+                )
+            }
+            .0 as u32,
+        )?;
         Ok(Self(Arc::new(Mutex::new(Some(session)))))
     }
 

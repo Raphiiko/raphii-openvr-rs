@@ -1,6 +1,8 @@
 use crate::{
-    Context, Error, Result, TrackedDeviceIndex, check, cstring, function, pose::Matrix3x4, raw,
+    Context, Error, Result, TrackedDeviceIndex, check, cstring, function, path_string,
+    pose::Matrix3x4, raw,
 };
+use std::path::Path;
 
 /// A session-scoped overlay ID. Destroy it explicitly, or shut down its context.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -112,6 +114,21 @@ impl Overlays<'_> {
                         device.0,
                         &mut matrix,
                     )
+                }
+                .0 as u32,
+            )
+        })
+    }
+    /// Loads the texture asynchronously, so it can appear after this returns.
+    pub fn set_from_file(&self, overlay: OverlayHandle, path: &Path) -> Result<()> {
+        let path = path_string(path)?;
+        self.0.with(|s| {
+            overlay.validate(s.id)?;
+            let table = s.overlay.as_ref().map_err(Clone::clone)?;
+            check(
+                "overlay",
+                unsafe {
+                    function!(table, SetOverlayFromFile)(overlay.id, path.as_ptr().cast_mut())
                 }
                 .0 as u32,
             )
