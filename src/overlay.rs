@@ -77,22 +77,6 @@ impl Overlays<'_> {
     setter!(set_width, SetOverlayWidthInMeters, f32);
     setter!(set_sort_order, SetOverlaySortOrder, u32);
 
-    pub fn set_flag(
-        &self,
-        overlay: OverlayHandle,
-        flag: raw::VROverlayFlags,
-        enabled: bool,
-    ) -> Result<()> {
-        self.0.with(|s| {
-            overlay.validate(s.id)?;
-            let table = s.overlay.as_ref().map_err(Clone::clone)?;
-            check(
-                "overlay",
-                unsafe { function!(table, SetOverlayFlag)(overlay.id, flag, enabled) }.0 as u32,
-            )
-        })
-    }
-
     pub fn set_visibility(&self, overlay: OverlayHandle, visible: bool) -> Result<()> {
         self.0.with(|s| {
             overlay.validate(s.id)?;
