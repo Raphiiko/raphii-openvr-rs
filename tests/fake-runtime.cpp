@@ -212,6 +212,11 @@ static EVROverlayError CALL overlay_flag(VROverlayHandle_t value, VROverlayFlags
     return static_cast<EVROverlayError>(1);
   return destroy_overlay(value);
 }
+static EVROverlayError CALL overlay_from_file(VROverlayHandle_t value, char *path) {
+  if (std::strcmp(path, "overlay.png"))
+    return static_cast<EVROverlayError>(1);
+  return destroy_overlay(value);
+}
 static EVROverlayError CALL overlay_show(VROverlayHandle_t value) {
   overlay_visible = true;
   return destroy_overlay(value);
@@ -380,6 +385,7 @@ EXPORT uint32_t VR_InitInternal2(EVRInitError *error, EVRApplicationType type,
   overlay_table.SetOverlayWidthInMeters = overlay_float;
   overlay_table.SetOverlaySortOrder = overlay_sort;
   overlay_table.SetOverlayFlag = overlay_flag;
+  overlay_table.SetOverlayFromFile = overlay_from_file;
   overlay_table.ShowOverlay = overlay_show;
   overlay_table.HideOverlay = overlay_hide;
   overlay_table.SetOverlayTransformTrackedDeviceRelative = overlay_transform;

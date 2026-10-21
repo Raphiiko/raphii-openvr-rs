@@ -239,6 +239,14 @@ fn simulated_runtime() {
     overlay
         .set_raw_data(handle, &[0, 0, 0, 255], 1, 1, 4)
         .unwrap();
+    overlay
+        .set_from_file(handle, Path::new("overlay.png"))
+        .unwrap();
+    assert!(
+        overlay
+            .set_from_file(handle, Path::new("other.png"))
+            .is_err()
+    );
     overlay.set_opacity(handle, 0.8).unwrap();
     overlay.set_width(handle, 1.0).unwrap();
     overlay.set_sort_order(handle, 200).unwrap();
