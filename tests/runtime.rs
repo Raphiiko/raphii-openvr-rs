@@ -242,6 +242,14 @@ fn simulated_runtime() {
     overlay.set_opacity(handle, 0.8).unwrap();
     overlay.set_width(handle, 1.0).unwrap();
     overlay.set_sort_order(handle, 200).unwrap();
+    overlay
+        .set_flag(handle, raw::VROverlayFlags::IsPremultiplied, true)
+        .unwrap();
+    assert!(
+        overlay
+            .set_flag(handle, raw::VROverlayFlags::NoBackside, true)
+            .is_err()
+    );
     overlay.set_visibility(handle, true).unwrap();
     assert!(overlay.is_dashboard_visible().unwrap());
     overlay.set_visibility(handle, false).unwrap();

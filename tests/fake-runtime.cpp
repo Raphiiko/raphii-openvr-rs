@@ -206,6 +206,12 @@ static EVROverlayError CALL overlay_float(VROverlayHandle_t value, float) {
 static EVROverlayError CALL overlay_sort(VROverlayHandle_t value, uint32_t) {
   return destroy_overlay(value);
 }
+static EVROverlayError CALL overlay_flag(VROverlayHandle_t value, VROverlayFlags flag,
+                                        bool enabled) {
+  if (flag != (1 << 21) || !enabled)
+    return static_cast<EVROverlayError>(1);
+  return destroy_overlay(value);
+}
 static EVROverlayError CALL overlay_show(VROverlayHandle_t value) {
   overlay_visible = true;
   return destroy_overlay(value);
@@ -373,6 +379,7 @@ EXPORT uint32_t VR_InitInternal2(EVRInitError *error, EVRApplicationType type,
   overlay_table.SetOverlayAlpha = overlay_float;
   overlay_table.SetOverlayWidthInMeters = overlay_float;
   overlay_table.SetOverlaySortOrder = overlay_sort;
+  overlay_table.SetOverlayFlag = overlay_flag;
   overlay_table.ShowOverlay = overlay_show;
   overlay_table.HideOverlay = overlay_hide;
   overlay_table.SetOverlayTransformTrackedDeviceRelative = overlay_transform;
